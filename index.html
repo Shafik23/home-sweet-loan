@@ -1,0 +1,10 @@
+<script src="https://unpkg.com/htmx.org"></script>
+
+
+<form hx-post="/calculate" hx-target="#results">
+	<input type="text" name="principal" placeholder="Principal Amount" required>
+	<input type="text" name="interest_rate" placeholder="Annual Interest Rate" required>
+	<input type="number" name="loan_term_years" placeholder="Loan Term (Years)" required>
+	<button type="submit">Calculate</button>
+</form>
+<div id="results"></div>

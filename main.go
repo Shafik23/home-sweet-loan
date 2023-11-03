@@ -2,23 +2,32 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"math"
 	"net/http"
 	"strconv"
-	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
+type MonthData struct {
+	Month            int     `json:"month"`
+	MonthlyInterest  float64 `json:"monthlyInterest"`
+	MonthlyPrincipal float64 `json:"monthlyPrincipal"`
+	RemainingBalance float64 `json:"remainingBalance"`
+}
+
 type mortgageInfo struct {
-	principal      float64
-	interestRate   float64
-	loanTermYears  int
-	monthlyRate    float64
-	monthlyPayment float64
-	totalInterest  float64
-	totalPayment   float64
+	principal     float64
+	interestRate  float64
+	loanTermYears int
+	monthlyRate   float64
+
+	TotalInterest  float64     `json:"totalInterest"`
+	MonthlyPayment float64     `json:"monthlyPayment"`
+	TotalPayment   float64     `json:"totalPayment"`
+	Schedule       []MonthData `json:"schedule"`
 }
 
 func calculateMortgage(principal float64, interestRate float64, loanTermYears int) mortgageInfo {
@@ -37,27 +46,20 @@ func calculateMortgage(principal float64, interestRate float64, loanTermYears in
 	info.interestRate = interestRate
 	info.loanTermYears = loanTermYears
 	info.monthlyRate = monthlyRate
-	info.monthlyPayment = monthlyPayment
-	info.totalInterest = totalInterest
-	info.totalPayment = totalPayment
+	info.MonthlyPayment = monthlyPayment
+	info.TotalInterest = totalInterest
+	info.TotalPayment = totalPayment
+
+	// calculate the schedule
+	remainingBalance := principal
+	for month := 1; month <= loanTermYears*12; month++ {
+		monthlyInterest := remainingBalance * info.monthlyRate
+		monthlyPrincipal := info.MonthlyPayment - monthlyInterest
+		remainingBalance -= monthlyPrincipal
+		info.Schedule = append(info.Schedule, MonthData{month, monthlyInterest, monthlyPrincipal, remainingBalance})
+	}
 
 	return info
-}
-
-func renderScheduleInHtml(mInfo mortgageInfo) string {
-	var scheduleHTML strings.Builder
-
-	scheduleHTML.WriteString("<table><tr><th>Month</th><th>Interest</th><th>Principal</th><th>Remaining Balance</th></tr>")
-	remainingBalance := mInfo.principal
-	for month := 1; month <= mInfo.loanTermYears*12; month++ {
-		monthlyInterest := remainingBalance * mInfo.monthlyRate
-		monthlyPrincipal := mInfo.monthlyPayment - monthlyInterest
-		remainingBalance -= monthlyPrincipal
-		scheduleHTML.WriteString(fmt.Sprintf("<tr><td>%d</td><td>%.2f</td><td>%.2f</td><td>%.2f</td></tr>", month, monthlyInterest, monthlyPrincipal, remainingBalance))
-	}
-	scheduleHTML.WriteString("</table>")
-	return scheduleHTML.String()
-
 }
 
 func mortgageHandler(w http.ResponseWriter, r *http.Request) {
@@ -70,7 +72,7 @@ func mortgageHandler(w http.ResponseWriter, r *http.Request) {
 	// Convert form values to appropriate types
 	principal, err := strconv.ParseFloat(principalStr, 64)
 	if err != nil {
-		http.Error(w, "Invalid principal amount", http.StatusBadRequest)
+		http.Error(w, "Invalid principal format - please enter a positive number", http.StatusBadRequest)
 		return
 	}
 
@@ -101,8 +103,14 @@ func mortgageHandler(w http.ResponseWriter, r *http.Request) {
 	// Store calculation in database
 	// TODO
 
-	// Respond to web client
-	fmt.Fprintf(w, "Monthly Payment: %.2f, Total Payment: %.2f, Total Interest: %.2f", mInfo.monthlyPayment, mInfo.totalPayment, mInfo.totalInterest)
+	jsonData, err := json.Marshal(mInfo)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonData)
 }
 
 func main() {

@@ -1,10 +1,14 @@
 <head>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/dark.css">
+	<script src="hsl.js"></script>
+	<script src="https://unpkg.com/htmx.org"></script>
 </head>
 
-<script src="https://unpkg.com/htmx.org"></script>
+<body>
+	<h1>Home Sweet Loan</h1>
+</body>
 
-
+<!-- See file hsl.js for how data is injected into the page. -->
 <form hx-post="/calculate" hx-target="#results">
 	<input type="text" name="principal" placeholder="Principal Amount" required>
 	<input type="text" name="interest_rate" placeholder="Annual Interest Rate" required>

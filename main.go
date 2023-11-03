@@ -68,8 +68,7 @@ func mortgageHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	// Serve static files from the current directory
-	fs := http.FileServer(http.Dir("."))
-	http.Handle("/", http.StripPrefix("/", fs))
+	http.HandleFunc("/", fileHandler)
 
 	http.HandleFunc("/calculate", mortgageHandler)
 

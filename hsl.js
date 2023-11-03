@@ -1,5 +1,12 @@
 document.addEventListener('htmx:afterOnLoad', function (event) {
-  var data = JSON.parse(event.detail.xhr.responseText);
+  const data = JSON.parse(event.detail.xhr.responseText);
+  if (data.error) {
+    const resultsDiv = document.getElementById('results');
+    resultsDiv.innerHTML = data.error;
+    resultsDiv.style.color = 'red';
+    resultsDiv.style.fontWeight = 'bold';
+    return;
+  }
 
   var table =
     '<table><tr><th>Month</th><th>Interest</th><th>Principal</th><th>Remaining Balance</th></tr>';

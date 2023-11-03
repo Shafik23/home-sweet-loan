@@ -62,6 +62,23 @@ func calculateMortgage(principal float64, interestRate float64, loanTermYears in
 	return info
 }
 
+func jsonError(w http.ResponseWriter, message string, httpStatusCode int) {
+	// Create a map for the error message
+	errorMap := map[string]string{"error": message}
+	// Convert the map to JSON
+	jsonData, err := json.Marshal(errorMap)
+	if err != nil {
+		// If there is an error marshaling the JSON, fall back to http.Error
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	// Set the content type header and the status code, then write the JSON error message
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(httpStatusCode)
+	w.Write(jsonData)
+}
+
 func mortgageHandler(w http.ResponseWriter, r *http.Request) {
 	// Parse form values
 	r.ParseForm()
@@ -71,20 +88,20 @@ func mortgageHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Convert form values to appropriate types
 	principal, err := strconv.ParseFloat(principalStr, 64)
-	if err != nil {
-		http.Error(w, "Invalid principal format - please enter a positive number", http.StatusBadRequest)
+	if err != nil || principal < 0.1 || principal > 10000000 {
+		jsonError(w, "Invalid principal format - please enter a number in the range [0.1, 10000000]", http.StatusBadRequest)
 		return
 	}
 
 	interestRate, err := strconv.ParseFloat(interestRateStr, 64)
-	if err != nil {
-		http.Error(w, "Invalid interest rate", http.StatusBadRequest)
+	if err != nil || interestRate < 0.1 || interestRate > 100 {
+		jsonError(w, "Invalid interest rate - please enter a number in the range [0.1, 100]", http.StatusBadRequest)
 		return
 	}
 
 	loanTermYears, err := strconv.Atoi(loanTermYearsStr)
-	if err != nil {
-		http.Error(w, "Invalid loan term", http.StatusBadRequest)
+	if err != nil || loanTermYears < 1 || loanTermYears > 100 {
+		jsonError(w, "Invalid loan term - please enter a number in the range [1, 100]", http.StatusBadRequest)
 		return
 	}
 

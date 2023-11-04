@@ -77,11 +77,15 @@ function populateLoanHistoryDropdown(loans) {
   const dropdown = document.getElementById('loanHistoryDropdown');
   let optionsHtml = '<option value="">-- Select a Loan --</option>';
 
-  loans.forEach(function (loan) {
-    optionsHtml += `<option value="${loan.id}">Principal: ${renderNumber(loan.principal)}, Interest Rate: ${
-      loan.interestRate
-    }%, Term: ${loan.loanTerm} years</option>`;
-  });
+  if (!loans || loans.length === 0) {
+    optionsHtml += '<option value="" disabled>No loans found</option>';
+  } else {
+    loans.forEach(function (loan) {
+      optionsHtml += `<option value="${loan.id}">Principal: ${renderNumber(loan.principal)}, Interest Rate: ${
+        loan.interestRate
+      }%, Term: ${loan.loanTerm} years</option>`;
+    });
+  }
 
   dropdown.innerHTML = optionsHtml;
 }

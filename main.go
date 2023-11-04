@@ -130,6 +130,10 @@ func mortgageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+
+	// This header actually triggers the history dropdown to reload!
+	w.Header().Set("HX-Trigger", "reloadHistory")
+
 	w.Write(jsonData)
 }
 

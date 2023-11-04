@@ -32,8 +32,8 @@
 			transform: scale(1.05);
 		}
 	</style>
-	<script src="hsl.js"></script>
 	<script src="https://unpkg.com/htmx.org"></script>
+	<script src="hsl.js"></script>
 </head>
 
 <body>
@@ -52,7 +52,7 @@
 		<!-- Loan History Dropdown -->
 		<div>
 			<label for="loanHistoryDropdown">Loan History:</label>
-			<select id="loanHistoryDropdown" hx-get="/fetchHistory" hx-trigger="load">
+			<select id="loanHistoryDropdown" hx-get="/fetchHistory" hx-trigger="load, reloadHistory from:body">
 				<option value="">-- Fetching Loans --</option>
 			</select>
 		</div>

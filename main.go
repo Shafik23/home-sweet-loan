@@ -18,6 +18,12 @@ type MonthData struct {
 	RemainingBalance float64 `json:"remainingBalance"`
 }
 
+type LoanRecord struct {
+	Principal    float64 `json:"principal"`
+	InterestRate float64 `json:"interestRate"`
+	LoanTerm     int     `json:"loanTerm"`
+}
+
 type mortgageInfo struct {
 	principal     float64
 	interestRate  float64
@@ -144,11 +150,62 @@ func storeLoan(principal float64, interestRate float64, loanTermYears int) error
 	return err
 }
 
+func historyHandler(w http.ResponseWriter, r *http.Request) {
+	db, err := sql.Open("sqlite3", "./hsl.db")
+	if err != nil {
+		http.Error(w, "Failed to connect to the database.", http.StatusInternalServerError)
+		return
+	}
+	defer db.Close()
+
+	// Query all loans from the database
+	rows, err := db.Query("SELECT Principal, InterestRate, LoanTerm FROM Loans")
+	if err != nil {
+		http.Error(w, "Failed to fetch records.", http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	var loans []LoanRecord
+
+	// Iterate through all records and add them to the loans slice
+	for rows.Next() {
+		var loan LoanRecord
+
+		err := rows.Scan(&loan.Principal, &loan.InterestRate, &loan.LoanTerm)
+
+		if err != nil {
+			http.Error(w, "Failed to read record.", http.StatusInternalServerError)
+			return
+		}
+
+		loans = append(loans, loan)
+	}
+
+	// Check for any errors from iterating over rows
+	if err = rows.Err(); err != nil {
+		http.Error(w, "Failed during iteration of records.", http.StatusInternalServerError)
+		return
+	}
+
+	// Convert loans slice to JSON
+	jsonData, err := json.Marshal(loans)
+	if err != nil {
+		http.Error(w, "Failed to convert records to JSON.", http.StatusInternalServerError)
+		return
+	}
+
+	// Send the JSON response
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonData)
+}
+
 func main() {
 	// Serve static files from the current directory
 	http.HandleFunc("/", fileHandler)
 
 	http.HandleFunc("/calculate", mortgageHandler)
+	http.HandleFunc("/fetchHistory", historyHandler)
 
 	port := "8888"
 	fmt.Println("Listening on port", port)

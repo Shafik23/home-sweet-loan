@@ -16,11 +16,11 @@ document.addEventListener('htmx:afterOnLoad', function (event) {
       '<tr><td>' +
       monthData.month +
       '</td><td>' +
-      monthData.monthlyInterest.toFixed(2) +
+      renderNumber(monthData.monthlyInterest) +
       '</td><td>' +
-      monthData.monthlyPrincipal.toFixed(2) +
+      renderNumber(monthData.monthlyPrincipal) +
       '</td><td>' +
-      monthData.remainingBalance.toFixed(2) +
+      renderNumber(monthData.remainingBalance) +
       '</td></tr>';
   });
 
@@ -28,11 +28,20 @@ document.addEventListener('htmx:afterOnLoad', function (event) {
 
   document.getElementById('results').innerHTML =
     '<h3> Monthly Payment: ' +
-    data.monthlyPayment.toFixed(2) +
+    renderNumber(data.monthlyPayment) +
     ', Total Payment: ' +
-    data.totalPayment.toFixed(2) +
+    renderNumber(data.totalPayment) +
     ', Total Interest: ' +
-    data.totalInterest.toFixed(2) +
+    renderNumber(data.totalInterest) +
     '<br><br></h3>' +
     table;
 });
+
+function renderNumber(number) {
+  // Javascript is so quirky! This takes care of the the -0.00 case
+  if (number < 0 && number > -0.001) {
+    number = 0;
+  }
+
+  return number.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+}

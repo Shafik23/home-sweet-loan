@@ -15,6 +15,12 @@ Simple Home Loan Schedule Calculator!
 - Build: `go build`
 - Run: `./home-sweet-loan`
 
+### Development
+- Pretty straightforward:
+  - Backend entry-point: main.go
+  - Frontend entry-point: hsl.html
+  - DB: hsl.db
+- Sorry, no hot-reload or live-reload!
 
 
 
@@ -41,9 +47,8 @@ It is built using **Go** for the backend, **SQLite** for the database, and **HTM
 
 ### Error Handling
 
-Input validation is performed on the backend. Errors are returned as JSON objects with a descriptive error message, to be rendered to the screen by the UI.
+Input validation is performed on the backend. Errors are returned as JSON objects with a descriptive error message, to be rendered on the screen by the UI.
 
 ### Testing
 
-Unit tests have been written for the calculateMortgage function to ensure accurate mortgage calculations.
-Additional tests have been written for the mortgageHandler function to ensure proper input validation and error handling.
+Unit tests have been written for the main backend functions that implement the business logic and validate user input. 

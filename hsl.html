@@ -5,7 +5,31 @@
 			display: flex;
 			align-items: center;
 			gap: 20px;
-			/* spacing between the form and dropdown */
+		}
+
+		h1 {
+			text-align: center;
+		}
+
+		/* Calculate button */
+		button[type="submit"] {
+			background-color: #4CAF50;
+			border: none;
+			color: white;
+			padding: 10px 20px;
+			text-align: center;
+			text-decoration: none;
+			display: inline-block;
+			font-size: 16px;
+			margin: 4px 2px;
+			cursor: pointer;
+			border-radius: 4px;
+			transition: transform 0.2s;
+		}
+
+		/* Button animation on hover */
+		button[type="submit"]:hover {
+			transform: scale(1.05);
 		}
 	</style>
 	<script src="hsl.js"></script>
@@ -14,6 +38,7 @@
 
 <body>
 	<h1>Home Sweet Loan</h1>
+	<br><br>
 
 	<div class="flex-container">
 		<!-- User Input Form -->

@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('loan-input').addEventListener('htmx:afterOnLoad', function (event) {
     const data = JSON.parse(event.detail.xhr.responseText);
+
     if (data.error) {
       const resultsDiv = document.getElementById('results');
       resultsDiv.innerHTML = data.error;
@@ -40,8 +41,34 @@ document.addEventListener('DOMContentLoaded', function () {
   const loanHistoryDropdown = document.getElementById('loanHistoryDropdown');
 
   if (loanHistoryDropdown) {
+    // Listen for API data coming back from DB
     loanHistoryDropdown.addEventListener('htmx:afterOnLoad', function (event) {
       populateLoanHistoryDropdown(JSON.parse(event.detail.xhr.responseText));
+    });
+
+    // Listen for changes on the loan history dropdown
+    loanHistoryDropdown.addEventListener('change', function (event) {
+      const selectedText = event.target.selectedOptions[0].text;
+
+      // Extract values from the option's text
+      const principalMatch = selectedText.match(/Principal: \$([\d,]+(\.\d{2})?)/);
+      const interestRateMatch = selectedText.match(/Interest Rate: (\d+(\.\d{1,2})?)%/);
+      const loanTermMatch = selectedText.match(/Term: (\d+) years/);
+
+      // Update input fields if matches were found
+      if (principalMatch) {
+        const principalValue = principalMatch[1].replace(/,/g, ''); // remove commas
+        document.querySelector('[name="principal"]').value = principalValue;
+      }
+      if (interestRateMatch) {
+        document.querySelector('[name="interest_rate"]').value = interestRateMatch[1];
+      }
+      if (loanTermMatch) {
+        document.querySelector('[name="loan_term_years"]').value = loanTermMatch[1];
+      }
+
+      // Clear the results elements
+      document.getElementById('results').innerHTML = '';
     });
   }
 });
@@ -58,6 +85,7 @@ function populateLoanHistoryDropdown(loans) {
 
   dropdown.innerHTML = optionsHtml;
 }
+
 function renderNumber(number) {
   // Javascript is so quirky! This takes care of the the -0.00 case
   if (number < 0 && number > -0.001) {

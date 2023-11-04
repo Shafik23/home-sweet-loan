@@ -1,24 +1,37 @@
 <head>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/dark.css">
+	<style>
+		.flex-container {
+			display: flex;
+			align-items: center;
+			gap: 20px;
+			/* spacing between the form and dropdown */
+		}
+	</style>
 	<script src="hsl.js"></script>
 	<script src="https://unpkg.com/htmx.org"></script>
 </head>
 
 <body>
 	<h1>Home Sweet Loan</h1>
+
+	<div class="flex-container">
+		<!-- User Input Form -->
+		<form id="loan-input" hx-post="/calculate" hx-target="#results">
+			<input type="text" name="principal" placeholder="Principal Amount" required>
+			<input type="text" name="interest_rate" placeholder="Annual Interest Rate" required>
+			<input type="number" name="loan_term_years" placeholder="Loan Term (Years)" required>
+			<button type="submit">Calculate</button>
+		</form>
+
+		<!-- Loan History Dropdown -->
+		<div>
+			<label for="loanHistoryDropdown">Loan History:</label>
+			<select id="loanHistoryDropdown" hx-get="/fetchHistory" hx-trigger="load">
+				<option value="">-- Fetching Loans --</option>
+			</select>
+		</div>
+	</div>
+
+	<div id="results"></div>
 </body>
-
-<!-- See file hsl.js for how data is injected into the page. -->
-<form id="loan-input" hx-post="/calculate" hx-target="#results">
-	<input type="text" name="principal" placeholder="Principal Amount" required>
-	<input type="text" name="interest_rate" placeholder="Annual Interest Rate" required>
-	<input type="number" name="loan_term_years" placeholder="Loan Term (Years)" required>
-	<button type="submit">Calculate</button>
-</form>
-
-<label for="loanHistory">Loan History:</label>
-<select id="loanHistoryDropdown" hx-get="/fetchHistory" hx-trigger="load">
-	<option value="">-- Fetching Loans --</option>
-</select>
-
-<div id="results"></div>

@@ -108,17 +108,14 @@ func mortgageHandler(w http.ResponseWriter, r *http.Request) {
 	// Calculate mortgage
 	mInfo := calculateMortgage(principal, interestRate, loanTermYears)
 
-	// Open database
-	db, err := sql.Open("sqlite3", "./hsl.db")
+	// Store the user input in the DB
+	err = storeLoan(principal, interestRate, loanTermYears)
 
 	if err != nil {
-		panic("Cannot open database")
+		fmt.Println(err)
+	} else {
+		fmt.Println("User-input inserted into DB successfully!")
 	}
-
-	defer db.Close()
-
-	// Store calculation in database
-	// TODO
 
 	jsonData, err := json.Marshal(mInfo)
 	if err != nil {
@@ -128,6 +125,23 @@ func mortgageHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(jsonData)
+}
+
+func storeLoan(principal float64, interestRate float64, loanTermYears int) error {
+	db, err := sql.Open("sqlite3", "./hsl.db")
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	stmt, err := db.Prepare("INSERT INTO Loans(Principal, InterestRate, LoanTerm) VALUES(?, ?, ?)")
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(principal, interestRate, loanTermYears)
+	return err
 }
 
 func main() {

@@ -163,7 +163,7 @@ func historyHandler(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	// Query all loans from the database
-	rows, err := db.Query("SELECT Principal, InterestRate, LoanTerm FROM Loans")
+	rows, err := db.Query("SELECT Principal, InterestRate, LoanTerm FROM Loans ORDER BY CreatedAt DESC LIMIT 100")
 	if err != nil {
 		http.Error(w, "Failed to fetch records.", http.StatusInternalServerError)
 		return
@@ -212,7 +212,7 @@ func main() {
 	http.HandleFunc("/fetchHistory", historyHandler)
 
 	port := "8888"
-	fmt.Printf("Listening on port %s - aborting if port is in use.\n", port)
+	fmt.Printf("Listening on port %s - will abort if port is in use.\n", port)
 
 	http.ListenAndServe(fmt.Sprintf(":%s", port), nil)
 }

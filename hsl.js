@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function populateLoanHistoryDropdown(loans) {
   const dropdown = document.getElementById('loanHistoryDropdown');
-  let optionsHtml = '<option value="">-- Select a Loan --</option>';
+  let optionsHtml = '';
 
   if (!loans || loans.length === 0) {
     optionsHtml += '<option value="" disabled>No loans found</option>';

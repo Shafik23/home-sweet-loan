@@ -3,7 +3,8 @@
 	<style>
 		.flex-container {
 			display: flex;
-			align-items: center;
+			align-items: normal;
+			justify-content: space-between;
 			gap: 20px;
 		}
 
@@ -38,6 +39,7 @@
 
 <body>
 	<h1>Home Sweet Loan</h1>
+	<h5 style="text-align:center">A simple-loan amortization calculator</h5>
 	<br><br>
 
 	<div class="flex-container">
@@ -51,7 +53,7 @@
 
 		<!-- Loan History Dropdown -->
 		<div>
-			<label for="loanHistoryDropdown">Input History:</label>
+			<label for="loanHistoryDropdown">Recent Input:</label>
 			<select id="loanHistoryDropdown" hx-get="/fetchHistory" hx-trigger="load, reloadHistory from:body">
 				<option value="">-- Fetching Loans --</option>
 			</select>

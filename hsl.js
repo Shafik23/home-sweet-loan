@@ -10,10 +10,30 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
 
-    var table = '<table><tr><th>Month</th><th>Interest</th><th>Principal</th><th>Remaining Balance</th></tr>';
+    var summaryTable =
+      '<table>' +
+      '<tr><th>Number of Payments</th><th>Monthly Payment</th><th>Total Amount Paid</th><th>Total Interest</th></tr>' +
+      '<tr>' +
+      '<td>' +
+      data.schedule.length +
+      '</td>' +
+      '<td>' +
+      renderNumber(data.monthlyPayment) +
+      '</td>' +
+      '<td>' +
+      renderNumber(data.totalPayment) +
+      '</td>' +
+      '<td>' +
+      renderNumber(data.totalInterest) +
+      '</td>' +
+      '</tr>' +
+      '</table><br>';
+
+    var scheduleTable =
+      '<table>' + '<tr><th>Month</th><th>Interest</th><th>Principal</th><th>Remaining Balance</th></tr>';
 
     data.schedule.forEach(function (monthData) {
-      table +=
+      scheduleTable +=
         '<tr><td>' +
         monthData.month +
         '</td><td>' +
@@ -25,17 +45,9 @@ document.addEventListener('DOMContentLoaded', function () {
         '</td></tr>';
     });
 
-    table += '</table>';
+    scheduleTable += '</table>';
 
-    document.getElementById('results').innerHTML =
-      '<h3> Monthly Payment: ' +
-      renderNumber(data.monthlyPayment) +
-      ', Total Payment: ' +
-      renderNumber(data.totalPayment) +
-      ', Total Interest: ' +
-      renderNumber(data.totalInterest) +
-      '<br><br></h3>' +
-      table;
+    document.getElementById('results').innerHTML = summaryTable + scheduleTable;
   });
 
   const loanHistoryDropdown = document.getElementById('loanHistoryDropdown');

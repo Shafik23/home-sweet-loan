@@ -212,7 +212,7 @@ func main() {
 	http.HandleFunc("/fetchHistory", historyHandler)
 
 	port := "8888"
-	fmt.Printf("Listening on port %s - will exit if port is in use\n", port)
+	fmt.Printf("Listening on port %s - aborting if port is in use.\n", port)
 
 	http.ListenAndServe(fmt.Sprintf(":%s", port), nil)
 }

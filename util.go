@@ -17,6 +17,8 @@ func isValidExtension(filePath string, allowedExtensions []string) bool {
 }
 
 func fileHandler(w http.ResponseWriter, r *http.Request) {
+	// fmt.Println("Requested path", r.URL.Path)
+
 	if r.URL.Path == "/" {
 		http.ServeFile(w, r, "./hsl.html")
 		return

@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
 
-    let summaryTable =
+    const summaryTable =
       '<table>' +
       '<tr><th>Number of Payments</th><th>Monthly Payment</th><th>Total Amount Paid</th><th>Total Interest</th></tr>' +
       '<tr>' +

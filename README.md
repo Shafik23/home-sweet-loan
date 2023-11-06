@@ -23,8 +23,7 @@ Simple Home Loan Schedule Calculator!
 - Sorry, no hot-reload or live-reload!
 
 
-
-## Architecture Design Record
+## Architecture 
 This is a simple 3-tier web application that computes the amortization schedule for a loan given a few user inputs. 
 
 It is built using **Go** for the backend, **SQLite** for the database, and **HTMX** for the frontend. The goal is to keep the implementation very simple.
@@ -65,3 +64,39 @@ Testing is divided into 3 categories: to run all tests, use the command `go test
   - `e2e_test.go`
   - These theoretically test the entire app, end to end (i.e. User Interface -> Database, and back).
   - In the real world we would use a robust framework for doing this like Selenium or my favorite, PlayWright.
+
+## User Stories
+
+### Feature: Mortgage Calculation
+User Story: 
+
+As a user, I want to calculate the monthly payment of a mortgage so that I can understand if I can afford the mortgage.
+
+Acceptance Criteria:
+
+- The calculator should allow the user to input the loan amount, interest rate, and loan term in years.
+- The calculator must validate the input to ensure it makes sense mathematically.
+- The calculator should display a clear error message if the input is invalid.
+- The monthly payment should be calculated and displayed to the user upon submission of valid data.
+
+### Feature: Amortization Schedule
+User Story: 
+
+As a user, I want to see an amortization schedule so that I can know how much principal and interest I will pay each month.
+
+Acceptance Criteria:
+
+- The schedule should be displayed after the monthly payment is calculated.
+- The schedule must list all payments for the entire term of the loan.
+Each entry in the amortization schedule should show the payment number, interest amount, principal amount, and remaining balance.
+- The final payment should reduce the balance to zero.
+
+### Feature: Historical View of Calculations
+User Story: 
+
+As a user, I want to see a history of my past calculations so that I can track changes and compare different mortgage options.
+
+Acceptance Criteria:
+
+- The user should be able to access a history view from the main interface.
+- The user should be able to select a past calculation to view its details.

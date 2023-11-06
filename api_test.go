@@ -18,3 +18,17 @@ func TestCalculate(t *testing.T) {
 		t.Fatalf("Expected status OK but got %v", resp.Status)
 	}
 }
+
+func TestFetchHistory(t *testing.T) {
+	resp, err := http.Get("http://localhost:8888/fetchHistory")
+
+	if err != nil {
+		t.Fatalf("Failed to send request: %v", err)
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("Expected status OK but got %v", resp.Status)
+	}
+}

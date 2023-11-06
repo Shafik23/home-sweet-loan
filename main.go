@@ -45,13 +45,12 @@ func calculateMortgage(principal float64, interestRate float64, loanTermYears in
 		loanTermYears: loanTermYears,
 	}
 
-	// Calculate the monthly interest rate
 	info.monthlyRate = interestRate / 12.0 / 100.0
 	numberOfPayments := float64(loanTermYears * 12)
 	denominator := 1 + info.monthlyRate
-
-	// Calculate monthly payment
 	powerFactor := math.Pow(denominator, numberOfPayments)
+
+	// Equation for mortgage payments, from pdf
 	info.MonthlyPayment = principal * info.monthlyRate * powerFactor / (powerFactor - 1)
 
 	// Calculate total payment and total interest

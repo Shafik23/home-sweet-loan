@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
 
-    var summaryTable =
+    let summaryTable =
       '<table>' +
       '<tr><th>Number of Payments</th><th>Monthly Payment</th><th>Total Amount Paid</th><th>Total Interest</th></tr>' +
       '<tr>' +
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
       '</tr>' +
       '</table><br>';
 
-    var scheduleTable =
+    let scheduleTable =
       '<table>' + '<tr><th>Month</th><th>Interest</th><th>Principal</th><th>Remaining Balance</th></tr>';
 
     data.schedule.forEach(function (monthData) {

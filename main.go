@@ -36,32 +36,36 @@ type mortgageInfo struct {
 	Schedule       []MonthData `json:"schedule"`
 }
 
+// Calculates mortgage related information given the principal amount, interest rate, and loan term in years
+// Returns calculated data including monthly payment, total payment, total interest, and a payment schedule
 func calculateMortgage(principal float64, interestRate float64, loanTermYears int) mortgageInfo {
-	var info mortgageInfo
+	var info = mortgageInfo{
+		principal:     principal,
+		interestRate:  interestRate,
+		loanTermYears: loanTermYears,
+	}
 
-	monthlyRate := interestRate / 12.0 / 100.0
+	// Calculate the monthly interest rate
+	info.monthlyRate = interestRate / 12.0 / 100.0
 	numberOfPayments := float64(loanTermYears * 12)
-	denominator := (1 + monthlyRate)
+	denominator := 1 + info.monthlyRate
 
+	// Calculate monthly payment
 	powerFactor := math.Pow(denominator, numberOfPayments)
-	monthlyPayment := principal * monthlyRate * powerFactor / (powerFactor - 1)
-	totalPayment := monthlyPayment * numberOfPayments
-	totalInterest := totalPayment - principal
+	info.MonthlyPayment = principal * info.monthlyRate * powerFactor / (powerFactor - 1)
 
-	info.principal = principal
-	info.interestRate = interestRate
-	info.loanTermYears = loanTermYears
-	info.monthlyRate = monthlyRate
-	info.MonthlyPayment = monthlyPayment
-	info.TotalInterest = totalInterest
-	info.TotalPayment = totalPayment
+	// Calculate total payment and total interest
+	info.TotalPayment = info.MonthlyPayment * numberOfPayments
+	info.TotalInterest = info.TotalPayment - principal
 
-	// calculate the schedule
+	// Calculate the payment schedule
 	remainingBalance := principal
+
 	for month := 1; month <= loanTermYears*12; month++ {
 		monthlyInterest := remainingBalance * info.monthlyRate
 		monthlyPrincipal := info.MonthlyPayment - monthlyInterest
 		remainingBalance -= monthlyPrincipal
+
 		info.Schedule = append(info.Schedule, MonthData{month, monthlyInterest, monthlyPrincipal, remainingBalance})
 	}
 
@@ -118,6 +122,9 @@ func mortgageHandler(w http.ResponseWriter, r *http.Request) {
 	err = storeLoan(principal, interestRate, loanTermYears)
 
 	if err != nil {
+		// Note: a unique constraint violation will cause an error here,
+		// even though it is expected behavior. This is not a problem we
+		// need to report to the user.
 		fmt.Println(err)
 	} else {
 		fmt.Println("User-input inserted into DB successfully!")
@@ -131,7 +138,7 @@ func mortgageHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
-	// This header actually triggers the history dropdown to reload!
+	// This htmx header triggers the history dropdown to reload!
 	w.Header().Set("HX-Trigger", "reloadHistory")
 
 	w.Write(jsonData)

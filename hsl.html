@@ -1,36 +1,98 @@
 <head>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/dark.css">
 	<style>
+		body {
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			color: #F5F5F5;
+			background-color: #1A1A1D;
+			max-width: 800px;
+			margin: 0 auto;
+			padding: 20px;
+		}
+
 		.flex-container {
 			display: flex;
-			align-items: normal;
-			justify-content: space-between;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
 			gap: 20px;
 		}
 
 		h1 {
+			color: #edebeb;
 			text-align: center;
+			margin-bottom: 0.3em;
 		}
 
-		/* Calculate button */
+		h5 {
+			color: #cabcc0;
+			margin-bottom: 2em;
+			font-weight: normal;
+		}
+
+		input,
+		select,
+		button[type="submit"] {
+			width: 100%;
+			padding: 10px;
+			margin: 6px 0;
+			display: inline-block;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			box-sizing: border-box;
+		}
+
 		button[type="submit"] {
 			background-color: #4CAF50;
-			border: none;
 			color: white;
-			padding: 10px 20px;
-			text-align: center;
-			text-decoration: none;
-			display: inline-block;
-			font-size: 16px;
-			margin: 4px 2px;
 			cursor: pointer;
-			border-radius: 4px;
-			transition: transform 0.2s;
+			transition: background-color 0.3s ease;
 		}
 
-		/* Button animation on hover */
 		button[type="submit"]:hover {
-			transform: scale(1.05);
+			background-color: #45a049;
+		}
+
+		#results {
+			margin-top: 20px;
+			padding: 20px;
+			border-radius: 4px;
+			background-color: #333;
+		}
+
+		hr {
+			border-color: #6b6b6b;
+			margin-top: 40px;
+		}
+
+		select {
+			appearance: none;
+			background-color: #333;
+			color: #fff;
+		}
+
+		label {
+			color: #aaa;
+			font-size: 14px;
+		}
+
+		/* Responsive design */
+		@media (min-width: 600px) {
+			.flex-container {
+				flex-direction: row;
+				align-items: flex-start;
+			}
+
+			input[type="text"],
+			input[type="number"],
+			select {
+				width: auto;
+				margin-right: 10px;
+			}
+
+			button[type="submit"] {
+				width: auto;
+			}
 		}
 	</style>
 	<script src="https://unpkg.com/htmx.org"></script>
@@ -39,8 +101,8 @@
 
 <body>
 	<h1>Home Sweet Loan</h1>
-	<h5 style="text-align:center">A simple-loan amortization calculator</h5>
-	<br><br>
+	<h5>A simple loan-amortization calculator - enter the Principal, Interest rate, and Loan term (in years), then hit
+		Calculate. Note that "Recent Input" shows the last 100 inputs by all users using this app.</h5>
 
 	<div class="flex-container">
 		<!-- User Input Form -->

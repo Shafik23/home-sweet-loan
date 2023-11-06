@@ -42,7 +42,7 @@ It is built using **Go** for the backend, **SQLite** for the database, and **HTM
 
 - **Frontend:** Implemented using HTMX, quite a minimal JavaScript library for accessing HTML templates and updating the DOM.
   - This was chosen in alignment with the goal of keeping everything very simple.
-  - A secondary reason was *exploration*! I had not had any experience with it and used this assignment as an opportunity to learn a new framework.
+  - A secondary reason was *exploration*! I used this assignment as an opportunity to learn a new framework.
   - In retrospect, it was probably not the best decision. A more appropriate choice would have been something like **Svelte**.
 
 ### Error Handling
@@ -51,4 +51,17 @@ Input validation is performed on the backend. Errors are returned as JSON object
 
 ### Testing
 
-Unit tests have been written for the main backend functions that implement the business logic and validate user input. 
+Testing is divided into 3 categories: to run all tests, use the command `go test -v`.
+
+- Unit Testing:
+  - `main_test.go`
+  - These test the main "business logic" of the application.
+  - Given more time, more tests can be written to test each function in the backend. Unit tests can also be expanded to include UI components/etc.
+- API Testing:
+  - `api_test.go`
+  - These test the backend API.
+  - Given more time, this can be vastly expanded to include many more edge cases/etc.
+- End-to-end Testing:
+  - `e2e_test.go`
+  - These theoretically test the entire app, end to end (i.e. User Interface -> Database, and back).
+  - In the real world we would use a robust framework for doing this like Selenium or my favorite, PlayWright.

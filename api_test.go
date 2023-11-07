@@ -1,46 +1,69 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+	"net/url"
 	"testing"
 )
 
-func TestCalculate(t *testing.T) {
-	resp, err := http.Get("http://localhost:8888/calculate?principal=200000&interest_rate=3.5&loan_term_years=30")
-
-	if err != nil {
-		t.Fatalf("Failed to send request: %v", err)
+func TestCalculateEndpoint(t *testing.T) {
+	testCases := []struct {
+		principal      string
+		interestRate   string
+		loanTermYears  string
+		expectedStatus int
+		description    string
+	}{
+		{"200000", "3.5", "30", http.StatusOK, "valid input"},
+		{"-2000", "3.5", "30", http.StatusBadRequest, "negative principal"},
+		{"200000", "-3.5", "30", http.StatusBadRequest, "negative interest rate"},
+		{"200000", "3.5", "-30", http.StatusBadRequest, "negative loan term"},
+		{"200000", "3.5", "", http.StatusBadRequest, "missing loan term"},
+		{"", "3.5", "30", http.StatusBadRequest, "missing principal"},
+		{"200000", "", "30", http.StatusBadRequest, "missing interest rate"},
+		{"notanumber", "3.5", "30", http.StatusBadRequest, "non-numeric principal"},
+		{"200000", "notanumber", "30", http.StatusBadRequest, "non-numeric interest rate"},
+		{"200000", "3.5", "notanumber", http.StatusBadRequest, "non-numeric loan term"},
+		{"0", "3.5", "30", http.StatusBadRequest, "zero principal"},
+		{"200000", "0", "30", http.StatusBadRequest, "zero interest rate"},
+		{"200000", "3.5", "0", http.StatusBadRequest, "zero loan term"},
+		// Add more test cases as needed
 	}
 
-	defer resp.Body.Close()
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			url := fmt.Sprintf("http://localhost:8888/calculate?principal=%s&interest_rate=%s&loan_term_years=%s",
+				url.QueryEscape(tc.principal), url.QueryEscape(tc.interestRate), url.QueryEscape(tc.loanTermYears))
+			resp, err := http.Get(url)
 
-	if resp.StatusCode != http.StatusOK {
-		t.Fatalf("Expected status OK but got %v", resp.Status)
-	}
+			if err != nil {
+				t.Fatalf("Failed to send request for '%s': %v", tc.description, err)
+			}
 
-	resp, err = http.Get("http://localhost:8888/calculate?principal=-2000&interest_rate=3.5&loan_term_years=30")
+			defer resp.Body.Close()
 
-	if err != nil {
-		t.Fatalf("Failed to send request: %v", err)
-	}
-
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusBadRequest {
-		t.Fatalf("Expected status BadRequest but got %v", resp.Status)
+			if resp.StatusCode != tc.expectedStatus {
+				t.Errorf("For '%s', expected status %v but got %v", tc.description, tc.expectedStatus, resp.Status)
+			}
+		})
 	}
 }
 
-func TestFetchHistory(t *testing.T) {
+func TestFetchHistoryEndpoint(t *testing.T) {
 	resp, err := http.Get("http://localhost:8888/fetchHistory")
 
 	if err != nil {
-		t.Fatalf("Failed to send request: %v", err)
+		t.Fatalf("Failed to send request to fetch history: %v", err)
 	}
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		t.Fatalf("Expected status OK but got %v", resp.Status)
+		t.Fatalf("Expected status OK but got %v when fetching history", resp.Status)
 	}
+
+	// Additional tests for fetchHistory can be added here.
+	// For example, checking the contents of the response to ensure that
+	// it contains the expected number of records and that they are ordered correctly.
 }

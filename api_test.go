@@ -28,7 +28,6 @@ func TestCalculateEndpoint(t *testing.T) {
 		{"0", "3.5", "30", http.StatusBadRequest, "zero principal"},
 		{"200000", "0", "30", http.StatusBadRequest, "zero interest rate"},
 		{"200000", "3.5", "0", http.StatusBadRequest, "zero loan term"},
-		// Add more test cases as needed
 	}
 
 	for _, tc := range testCases {
@@ -64,6 +63,4 @@ func TestFetchHistoryEndpoint(t *testing.T) {
 	}
 
 	// Additional tests for fetchHistory can be added here.
-	// For example, checking the contents of the response to ensure that
-	// it contains the expected number of records and that they are ordered correctly.
 }

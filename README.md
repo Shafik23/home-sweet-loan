@@ -100,3 +100,18 @@ Acceptance Criteria:
 
 - The user should be able to access a history view from the main interface.
 - The user should be able to select a past calculation to view its details.
+
+## Potential Concerns
+Obviously this is not a serious application and there are many potential pitfalls and deficiencies in it. Here are some of them (in no particular order):
+  - Lack of robust e2e testing.
+  - Not using HTMX in the intended idiomatic way (rendering html on the backend).
+  - No explicit CORS policy.
+  - Implicit coupling between frontend and backend:
+    - The frontend has an implicit dependency on the structure of the server's JSON response. If the response structure changes, the JS code may fail.
+    - The regex used in the JS for extracting values from the dropdown could fail if the formatting of the option text changes. This coupling requires that the format of the dropdown text be strictly maintained.
+  - CSS hardcoded dimensions.
+    - This may make it difficult for the UI to render correctly on different screen sizes.
+  - Very basic/inefficient Database interaction.
+  - No CSRF protection.
+  - Minimal input sanitization.
+  - Lack of ARIA attributes.

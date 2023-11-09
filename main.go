@@ -4,9 +4,11 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"io"
 	"math"
 	"net/http"
 	"strconv"
+	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -88,6 +90,21 @@ func jsonError(w http.ResponseWriter, message string, httpStatusCode int) {
 	w.Write(jsonData)
 }
 
+func jsonResponse(w http.ResponseWriter, data interface{}, httpStatusCode int) {
+	// Marshal the data into JSON
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		// Fallback to http.Error in case of marshaling error
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	// Set the content type header and the status code, then write the JSON data
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(httpStatusCode)
+	w.Write(jsonData)
+}
+
 func mortgageHandler(w http.ResponseWriter, r *http.Request) {
 	// Parse form values
 	r.ParseForm()
@@ -129,18 +146,10 @@ func mortgageHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("User-input inserted into DB successfully!")
 	}
 
-	jsonData, err := json.Marshal(mInfo)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-
 	// This htmx header triggers the history dropdown to reload!
 	w.Header().Set("HX-Trigger", "reloadHistory")
 
-	w.Write(jsonData)
+	jsonResponse(w, mInfo, http.StatusOK)
 }
 
 func storeLoan(principal float64, interestRate float64, loanTermYears int) error {
@@ -198,16 +207,59 @@ func historyHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Convert loans slice to JSON
-	jsonData, err := json.Marshal(loans)
+	jsonResponse(w, loans, http.StatusOK)
+}
+
+type MarketRateResponse struct {
+	Rate string `json:"rate"`
+}
+
+func marketRateHandler(w http.ResponseWriter, r *http.Request) {
+	rate, err := fetchCurrentMarketMortgageRate()
 	if err != nil {
-		http.Error(w, "Failed to convert records to JSON.", http.StatusInternalServerError)
+		// You can use the jsonError function if it's appropriate
+		jsonError(w, "Failed to fetch the market mortgage rate", http.StatusInternalServerError)
 		return
 	}
 
-	// Send the JSON response
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonData)
+	// Create response object
+	response := MarketRateResponse{Rate: rate}
+
+	jsonResponse(w, response, http.StatusOK)
+}
+
+func fetchCurrentMarketMortgageRate() (string, error) {
+	// URL of the market mortgage rate data
+	url := "https://fred.stlouisfed.org/data/MORTGAGE30US.txt"
+
+	// HTTP GET request to the URL
+	resp, err := http.Get(url)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	// Read the response body
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	// Convert body to string and split by newline
+	lines := strings.Split(string(body), "\n")
+	if len(lines) < 2 {
+		return "", fmt.Errorf("unexpected format of the data")
+	}
+
+	// The last line contains the latest rate
+	lastLine := lines[len(lines)-2] // -2 because the last element is empty due to newline at the end
+	parts := strings.Fields(lastLine)
+	if len(parts) < 2 {
+		return "", fmt.Errorf("unexpected format of the last line")
+	}
+
+	// Return the last part which should be the rate
+	return parts[len(parts)-1], nil
 }
 
 func main() {
@@ -216,6 +268,7 @@ func main() {
 
 	http.HandleFunc("/calculate", mortgageHandler)
 	http.HandleFunc("/fetchHistory", historyHandler)
+	http.HandleFunc("/currentMarketRate", marketRateHandler)
 
 	port := "8888"
 	fmt.Printf("Listening on port %s - will abort if port is in use.\n", port)

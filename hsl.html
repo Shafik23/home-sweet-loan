@@ -1,4 +1,8 @@
 <head>
+	<!-- Responsive design: scale things correctly so that we can work with "Device-Independent Pixels" (DIPs) instead of
+	"Pixels" (px). This is important for mobile devices, which have a wide range of pixel densities. -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/dark.css">
 	<style>
 		body {
@@ -82,6 +86,17 @@
 			font-size: 14px;
 		}
 
+		#currentRate {
+			border-radius: 4px;
+			border-width: 1px;
+			padding: 10px;
+			border-color: #FFF;
+			border-style: solid;
+			margin-top: 20px;
+			margin-bottom: 22px;
+			margin-right: 10px;
+		}
+
 		/* Responsive design */
 		@media (min-width: 600px) {
 			.flex-container {
@@ -129,7 +144,7 @@
 			</div>
 
 			<!-- Interest Rate Display -->
-			<div id="currentRate" style="color: #FFF; margin-top: 20px; margin-bottom:20px">
+			<div id="currentRate">
 			</div>
 		</div>
 	</div>

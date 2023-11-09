@@ -92,7 +92,7 @@ function fetchCurrentMarketRate() {
   fetch('/currentMarketRate')
     .then(response => response.json())
     .then(data => {
-      document.getElementById('currentRate').textContent = `Current US Market Rate: ${data.rate}%`;
+      document.getElementById('currentRate').textContent = `Current US 30-year Rate: ${data.rate}%`;
     })
     .catch(error => {
       console.error('Error fetching current rate:', error);

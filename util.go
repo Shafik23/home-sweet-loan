@@ -24,7 +24,7 @@ func fileHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	allowedExtensions := []string{".html", ".css", ".js", ".ico"}
+	allowedExtensions := []string{".html", ".css", ".js", ".ico", ".png", ".jpg", ".jpeg", ".svg", ".woff2", ".woff", ".ttf", ".eot"}
 	if !isValidExtension(r.URL.Path, allowedExtensions) {
 		http.NotFound(w, r)
 		return

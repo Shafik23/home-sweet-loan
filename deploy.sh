@@ -13,6 +13,7 @@ rsync --delete -azP -e ssh ./db_migrations $remote:~/homesweetloan &
 rsync --delete -azP -e ssh ./*.js $remote:~/homesweetloan &
 rsync --delete -azP -e ssh ./*.html $remote:~/homesweetloan &
 rsync --delete -azP -e ssh ./*.ico $remote:~/homesweetloan &
+rsync --delete -azP -e ssh ./*.png $remote:~/homesweetloan &
 
 wait
 

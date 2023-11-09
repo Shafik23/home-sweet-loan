@@ -97,6 +97,11 @@
 			margin-right: 10px;
 		}
 
+		.centered {
+			display: flex;
+			justify-content: center;
+		}
+
 		/* Responsive design */
 		@media (min-width: 600px) {
 			.flex-container {
@@ -121,7 +126,9 @@
 </head>
 
 <body>
-	<h1>Home Sweet Loan</h1>
+	<h1>
+		Home Sweet Loan
+	</h1>
 	<h5>A simple loan-amortization calculator - enter the Principal, Interest rate, and Loan term (in years), then hit
 		Calculate. Note that "Recent Input" shows the last 100 inputs by all users using this app.</h5>
 
@@ -151,4 +158,8 @@
 
 	<hr>
 	<div id="results"></div>
+
+	<div class="centered">
+		<img src="house.png" alt="House" style="height: 100px; width: 100px; margin-top: 20px">
+	</div>
 </body>

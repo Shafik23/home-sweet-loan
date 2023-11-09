@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
+  fetchCurrentMarketRate();
+
   document.getElementById('loan-input').addEventListener('htmx:afterOnLoad', function (event) {
     const data = JSON.parse(event.detail.xhr.responseText);
 
@@ -84,6 +86,18 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 });
+
+// Function to fetch and display the current interest rate
+function fetchCurrentMarketRate() {
+  fetch('/currentMarketRate')
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById('currentRate').textContent = `Current US Market Rate: ${data.rate}%`;
+    })
+    .catch(error => {
+      console.error('Error fetching current rate:', error);
+    });
+}
 
 function populateLoanHistoryDropdown(loans) {
   const dropdown = document.getElementById('loanHistoryDropdown');

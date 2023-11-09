@@ -1,10 +1,14 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCalculateEndpoint(t *testing.T) {
@@ -63,4 +67,48 @@ func TestFetchHistoryEndpoint(t *testing.T) {
 	}
 
 	// Additional tests for fetchHistory can be added here.
+}
+
+func TestCalculateEndpointJSONShape(t *testing.T) {
+	url := "http://localhost:8888/calculate?principal=200000&interest_rate=3.5&loan_term_years=30"
+	resp, err := http.Get(url)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	var info mortgageInfo
+	err = json.NewDecoder(resp.Body).Decode(&info)
+	require.NoError(t, err)
+
+	assert.NotZero(t, info.MonthlyPayment)
+	assert.NotZero(t, info.TotalPayment)
+	assert.NotZero(t, info.TotalInterest)
+	assert.NotEmpty(t, info.Schedule)
+}
+
+func TestFetchHistoryEndpointJSONShape(t *testing.T) {
+	resp, err := http.Get("http://localhost:8888/fetchHistory")
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	var loans []LoanRecord
+	err = json.NewDecoder(resp.Body).Decode(&loans)
+	require.NoError(t, err)
+
+	for _, loan := range loans {
+		assert.NotZero(t, loan.Principal)
+		assert.NotZero(t, loan.InterestRate)
+		assert.NotZero(t, loan.LoanTerm)
+	}
+}
+
+func TestMarketRateEndpointJSONShape(t *testing.T) {
+	resp, err := http.Get("http://localhost:8888/currentMarketRate")
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	var marketRate MarketRateResponse
+	err = json.NewDecoder(resp.Body).Decode(&marketRate)
+	require.NoError(t, err)
+
+	assert.NotEmpty(t, marketRate.Rate)
 }

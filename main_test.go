@@ -38,11 +38,6 @@ func TestCalculateMortgage(t *testing.T) {
 	}
 }
 
-func round(x float64, prec int) float64 {
-	pow10 := math.Pow(10, float64(prec))
-	return math.Round(x*pow10) / pow10
-}
-
 func closeEnough(a, b, tolerance float64) bool {
 	return math.Abs(a-b) <= tolerance
 }
